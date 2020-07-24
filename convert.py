@@ -42,8 +42,9 @@ for x in range(len(files)):
             index = next((index for (index, d) in enumerate(files) if "name" in d and d["name"] == id["name"]), -1)
             #check if index was found
             if index > 0:
+                filename = id["id"][:7] + "-" + id["id"][8:11] + "-" + id["id"][12:15] + "-" + id["id"][16:19] + "-" + id["id"][20:] + ".dat"
                 #add new filepath to dictionary:
-                files[index]["newfilename"] = files[index]["filename"][:files[index]["filename"].rfind(os.sep)+1] + id["id"] + ".dat"
+                files[index]["newfilename"] = files[index]["filename"][:files[index]["filename"].rfind(os.sep)+1] + filename
         #reset count and names
         count = 0
         names = []
