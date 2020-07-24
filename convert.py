@@ -42,7 +42,7 @@ for x in range(len(files)):
             index = next((index for (index, d) in enumerate(files) if "name" in d and d["name"] == id["name"]), -1)
             #check if index was found
             if index > 0:
-                filename = id["id"][:7] + "-" + id["id"][8:11] + "-" + id["id"][12:15] + "-" + id["id"][16:19] + "-" + id["id"][20:] + ".dat"
+                filename = id["id"][:8] + "-" + id["id"][8:12] + "-" + id["id"][12:16] + "-" + id["id"][16:20] + "-" + id["id"][20:] + ".dat"
                 #add new filepath to dictionary:
                 files[index]["newfilename"] = files[index]["filename"][:files[index]["filename"].rfind(os.sep)+1] + filename
         #reset count and names
@@ -52,6 +52,7 @@ for x in range(len(files)):
 countDat = 0
 #loop through the files list
 for f in files:
+    #print(f)
     #check if the files is to be renamed
     if "newfilename" in f:
         #rename the file
