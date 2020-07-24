@@ -3,6 +3,7 @@ import glob
 import requests
 from requests.exceptions import HTTPError
 import os
+import json
 
 files = []
 names = []
@@ -23,24 +24,37 @@ for x in range(len(files)):
     #increment count
     count += 1
     #run if count is over 100 or if at last loop and count is over 0
-    if count > 100 | (x == len(files) - 1 & count > 0):
+    if count >= 10 or (x == len(files) - 1 and count > 0):
         #send post request to mojang api
         try:
-            response = requests.post("https://api.mojang.com/profiles/minecraft", data=names)
+            response = requests.post("https://api.mojang.com/profiles/minecraft", data=json.dumps(names))
         except HTTPError as http_err:
             print(f'HTTP error occurred: {http_err}')  # Python 3.6
         except Exception as err:
             print(f'Other error occurred: {err}')  # Python 3.6
         else:
-            print('Success! Get Reply from mojang api')
+            print("got response for " + str(count) + " players")
         #merge response and list of files
-        for id in response.json:
-            #find index of dictionary with matching name
-            index = next((index for (index, d) in enumerate(files) if d["name"] == response.json["name"]), None)
-            #add new filepath to dictionary:
-            files[index]["newfilename"] = files[index]["newfilename"][:files[index]["newfilename"].rfind(os.sep)] + response.json["id"] + ".dat"
+        #print(response.json())
+        for id in response.json():
+            #print(id["name"])
+            #find index of dictionary with existing name key and matching name
+            index = next((index for (index, d) in enumerate(files) if "name" in d and d["name"] == id["name"]), -1)
+            #check if index was found
+            if index > 0:
+                #add new filepath to dictionary:
+                files[index]["newfilename"] = files[index]["filename"][:files[index]["filename"].rfind(os.sep)+1] + id["id"] + ".dat"
         #reset count and names
         count = 0
         names = []
 
-print(files)
+countDat = 0
+#loop through the files list
+for f in files:
+    #check if the files is to be renamed
+    if "newfilename" in f:
+        #rename the file
+        os.rename(f["filename"],f["newfilename"])
+        countDat += 1
+
+print("updated " + str(countDat) + " files.")
